@@ -133,4 +133,29 @@ mat2 Inverse(const mat2& mat);
 mat3 Inverse(const mat3& mat);
 mat4 Inverse(const mat4& mat);
 
+// declarations of Translation
+mat4 Translation(float x, float y, float z);
+mat4 Translation(const vec3& pos);
+vec3 GetTranslation(const mat4& mat);
+
+// declarations for all scaling functions
+mat4 Scale(float x, float y, float z);
+mat4 Scale(const vec3& vec);
+vec3 GetScale(const mat4& mat);
+
+// declaratopms for rotations
+mat4 Rotation(float pitch, float yaw, float roll);
+mat3 Rotation3x3(float pitch, float yaw, float roll);
+mat4 ZRotation(float angle);
+mat3 ZRotation3x3(float angle);
+mat4 XRotation(float angle);
+mat3 XRotation3x3(float angle);
+mat4 YRotation(float angle);
+mat3 YRotation3x3(float angle);
+
+// declarations of axis angles
+mat4 AxisAngle(const vec3& axis, float angle);
+mat3 AxisAngle3xx3(const vec3& axis, float angle);
+
+
 #endif

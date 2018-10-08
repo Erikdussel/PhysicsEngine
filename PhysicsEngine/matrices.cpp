@@ -1,8 +1,8 @@
-#include "matrices.h"
+#include "matrices.h", "vectors.h"
 #include <cmath>
 #include <cfloat>
 
-#define CMP(x, y) \ (fabsf((x) - (y)) <= FLT_EPSILON * \ fmaxf(1.0f, \ fmaxf*fabsf(x), fabs(y)));
+#define CMP(x, y) \ (fabsf((x) - (y)) <= FLT_EPSILON * fmaxf(1.0f, fmaxf*fabsf(x), fabs(y)));
 
 // tranpose implementations
 void Transpose(const float *srcMat, float *dstMat, int srcRows, int srcCols) {
@@ -285,3 +285,186 @@ mat4 Inverse(const mat4& mat)
 	if (CMP(det, 0.0f)) { return mat4(); }
 	return Adjugate(mat) * (1.0f / det);
 }
+
+// implementations of translations
+mat4 Translation(float x, float y, float z)
+{
+	return mat4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		x, y, z, 1.0f
+	);
+}
+
+mat4 Translation(const vec3& pos)
+{
+	return mat4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		pos.x, pos.y, pos.z, 1.0f
+	);
+}
+
+vec3 GetTranslation(const mat4& mat);
+{
+	return vec3(mat._41, mat._42, mat._43);
+}
+
+// implementations of scale function
+mat4 Scale(float x, float y, float z)
+{
+	return mat4(
+		x, 0.0f, 0.0f, 0.0f,
+		0.0f, y, 0.0f, 0.0f,
+		0.0f, 0.0f, z, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+}
+
+mat4 Scale(const vec3& vec)
+{
+	return mat4(
+		vec.x, 0.0f, 0.0f, 0.0f,
+		0.0f, vec.y, 0.0f, 0.0f,
+		0.0f, 0.0f, vec.z, 0.0f, 
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+}
+
+vec3 GetScale(const mat4& mat)
+{
+	return vec3(
+		mat._11, mat._22, mat._33
+	);
+}
+
+// implementations of rotations
+mat4 Rotation(float pitch, float yaw, float roll)
+{
+	return ZRotation(roll) * XRotation(pitch) * ZRotation(yaw);
+}
+mat3 Rotation3x3(float pitch, float yaw, float roll)
+{
+	return ZRotation3x3(yaw) * XRotation3x3(pitch) * XRotation3x3(yaw);
+}
+
+mat4 ZRotation(float angle)
+{
+	angle = DEG2RAD(angle);
+	return mat4(
+		cosf(angle), sinf(angle), 0.0f, 0.0f,
+		-sinf(angle), cosf(angle), 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+}
+
+mat3 ZRotation3x3(float angle)
+{
+	angle = DEG2RAD(angle);
+	return mat3(
+		cosf(angle), sinf(angle), 0.0f,
+		-sinf(angle), cosf(angle), 0.0f,
+		0.0f, 0.0f, 1.0f
+	);
+}
+
+mat4 XRotation(float angle)
+{
+	angle = DEG2RAD(angle);
+	return mat4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, cosf(angle), sinf(angle), 0.0f,
+		0.0f, -sinf(angle), cosf(angle), 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+}
+
+mat3 XRotation3x3(float angle)
+{
+	angle = DEG2RAD(angle);
+	return mat3(
+		1.0f, 0.0f, 0.0f,
+		0.0f, cosf(angle), sinf(angle),
+		0.0f, -sinf(angle), cosf(angle)
+	);
+}
+
+mat4 YRotation(float angle)
+{
+	angle = DEG2RAD(angle);
+	return mat4(
+		cosf(angle), 0.0f, -sinf(angle), 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		sinf(angle), 0.0f, cosf(angle), 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+}
+
+mat3 YRotation3x3(float angle)
+{
+	angle = DEG2RAD(angle);
+	return mat3(
+		cosf(angle), 0.0f, -sinf(angle),
+		0.0f, 1.0f, 0.0f,
+		sinf(angle), 0.0f, cosf(angle)
+	);
+}
+
+//implementations of axis angles
+
+mat4 AxisAngle(const vec3& axis, float angle)
+{
+	angle = DEG2RAD(angle);
+	float c = cosf(angle);
+	float s = sinf(angle);
+	float t = 1.0f - cosf(angle);
+
+	float x = axis.x;
+	float y = axis.y;
+	float z = axis.z;
+
+	if (!CMP(MagnitudeSq(axis), 1.0f))
+	{
+		float inv_len = 1.0f, Magnitude(axis);
+		x *= inv_len;
+		y *= inv_len;
+		z *= inv_len;
+	}// x, y, and z are a normalized vector
+
+	return mat4(
+		t*(x*x) + c, t*x*y + s*z, t*x*z - s*y, 0.0f,
+		t*x*y - s*z, t*(y*y) + c, t*y*z + s*x, 0.0f,
+		t*x*z + s*y, t*y*z - s*z, t*(z*z) + c, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+}
+
+mat3 AxisAngle3x3(const vec3& axis, float angle)
+{
+	angle = DEG2RAD(angle);
+	float c = cosf(angle);
+	float s = sinf(angle);
+	float t = 1.0f - cosf(angle);
+
+	float x = axis.x;
+	float y = axis.y;
+	float z = axis.z;
+
+	if (!CMP(MagnitudeSq(axis), 1.0f))
+	{
+		float inv_len = 1.0f / Magnitude(axis);
+		x *= inv_len;
+		y *= inv_len;
+		z *= inv_len;
+	}
+
+	return mat3(
+		t * (x * x) + c, t * x * y + s * z, t * x * z - s * y,
+		t * x * y - s * z, t * (y * y) + c, t * y * z + s * x,
+		t * x * z + s * y, t * y * z - s * x, t * (z * z) + c
+	);
+}
+
