@@ -24,15 +24,21 @@
     <ClInclude Include="vectors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="matrices.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\GamePhysicsCookbook\GamePhysicsCookbook\matrices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\vectors.cpp">
+    <ClCompile Include="Geometry2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Geometry2D.cpp">
+    <ClCompile Include="matrices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vectors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -122,9 +122,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\GamePhysicsCookbook\GamePhysicsCookbook\matrices.cpp" />
-    <ClCompile Include="..\..\vectors.cpp" />
     <ClCompile Include="Geometry2D.cpp" />
     <ClCompile Include="matrices.cpp" />
+    <ClCompile Include="vectors.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
