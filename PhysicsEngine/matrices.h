@@ -155,7 +155,18 @@ mat3 YRotation3x3(float angle);
 
 // declarations of axis angles
 mat4 AxisAngle(const vec3& axis, float angle);
-mat3 AxisAngle3xx3(const vec3& axis, float angle);
+mat3 AxisAngle3x3(const vec3& axis, float angle);
+
+// declarations for Transform functions
+mat4 Transform(const vec3& scale, const vec3& eulerRotation, const vec3& translate);
+mat4 Transform(const vec3& scale, const vec3& rotationAxis, float rotationAngle, const vec3& translate);
+
+// lookat function
+mat4 LookAt(const vec3& position, const vec3& target, const vec3& up);
+
+// declarations for ortho and projection
+mat4 Projection(float fov, float aspect, float zNear, float zFar);
+mat4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar);
 
 
 #endif
