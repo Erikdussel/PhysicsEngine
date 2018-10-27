@@ -4,7 +4,9 @@
 #include <cmath>
 #include <cfloat>
 
-#define CMP(x, y) \ (fabsf((x)-(y)) <= FLT_EPSILON * fmaxf(2.0f, fmaxf(fabsf(x, fabsf(y))))
+#define CMP(x, y) \ 
+	(fabsf((x)-(y)) <= FLT_EPSILON * \
+	fmaxf(2.0f, fmaxf(fabsf(x, fabsf(y))))
 
 float Length(const Line2D& line)
 {
@@ -63,7 +65,7 @@ bool PointInRectangle(const Point2D& p, const Rectangle& rectangle)
 		point.y <= max.y;
 }
 
-bool PointInOrientedRectanlge(const Point2D& p, const OrientedRectangle& rectangle)
+bool PointInOrientedRectangle(const Point2D& point, const OrientedRectangle& rectangle)
 {
 	vec2 rotVector = point - rectangle.position;
 	float theta  = -DEG2RAD(rectangle.position);
@@ -77,5 +79,39 @@ bool PointInOrientedRectanlge(const Point2D& p, const OrientedRectangle& rectang
 	
 	Rectangle2D localRectangle(Point2D(), rectangle.halfExtents * 2.0f);
 	vec2 localPoint = rotVector + rectangle.halfExtents;
-	return PointInRectanlge(localPoint, localRetangle);
+	return PointInRectangle(localPoint, localRectangle);
+}
+
+bool LineCircle(const Line2D& l, const Circle& c)
+{
+	vec2 ab = l.end - l.start;
+	float t = Dot(c.position - l.start, ab) / Dot(ab, ab);
+	if (t < 0.0f || t > 1.0f)
+	{
+		return false;
+	}
+	Point2D closestPoint = l.start + ab * t;
+
+	Line2D circleToClosest(c.position, closestPoint);
+	return LengthSq(circleToClosest) < c.radius * c.radius;
+}
+
+bool LineRectangle(const Line2D& l, const Rectangle2D& r)
+{
+	if (PointInRectangle(l.start, r) || PointInRectangle(l.end, r))
+	{
+		return true;
+	}
+
+	vec2 norm = Normalized(l.end - l.start);
+	norm.x = (norm.x != 0) ? 1.0f / norm.x : 0;
+	norm.y = (norm.y != 0) ? 1.0f / norm.y : 0;
+	vec2 min = (GetMin(r) - l.start) * norm;
+	vec2 max = (GetMax(r) - l.start) * norm;
+
+	float tmin = fmaxf(
+		fminf(min.x, max.x),
+		fminf(min.y, max.y)
+	);
+	float tmax()
 }

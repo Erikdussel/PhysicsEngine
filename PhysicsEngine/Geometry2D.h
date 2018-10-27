@@ -60,5 +60,20 @@ bool PointInCircle(const Point2D& point, const Circle& c);
 bool PointInRectangle(const Point2D& point, const Rectangle2D& rectangle);
 bool PointInOrientedRectangle(const Point2D& point, const OrientedRectangle& rectangle);
 
+bool LineCircle(const Line2D& line, const Circle& circle);
+bool LineRectanlge(const Line2D& l, const Rectangle2D& r);
+bool LineOrientedRectangle(const Line2D& line, const OrientedRectangle &rectangle);
 
+#define PointLine(point, line) \
+	PointOnLine(point, line)
+#define LinePoint(line, point) \
+	PointOnLine(point, line)
+#define CircleLine(circle, line) \
+	LineCircle(line, circle)
+#define RectangleLine(rectangle, line) \
+	LineRectangle(line, rectangle)
+#define OrientedRetangleLine(rectangle, line) \
+	LineOrientedRectangle(line, rectangle)
+
+	
 #endif
