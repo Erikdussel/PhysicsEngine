@@ -8,6 +8,13 @@
 	(fabsf((x)-(y)) <= FLT_EPSILON * \
 	fmaxf(2.0f, fmaxf(fabsf(x, fabsf(y))))
 
+#define CLAMP(number, minimum, maximum) 		\
+	number = (number < minimum) ? minimum : (	\
+		(number > maximum) ? maximum : number);
+
+#define OVERLAP(aMin, aMax, bMin, bMax) \
+	((bMin <= aMax) && (aMin <= bMax))
+
 float Length(const Line2D& line)
 {
 	return Magnitude(line.end, line.start);
@@ -59,9 +66,9 @@ bool PointInRectangle(const Point2D& p, const Rectangle& rectangle)
 	vec2 min = GetMin(rectangle);
 	vec2 max = GetMax(rectangle);
 
-	return min.x <= point.x&&
-		min.y <= point.y&&
-		point.x <= max.x&&
+	return min.x <= point.x &&
+		min.y <= point.y &&
+		point.x <= max.x &&
 		point.y <= max.y;
 }
 
@@ -113,5 +120,117 @@ bool LineRectangle(const Line2D& l, const Rectangle2D& r)
 		fminf(min.x, max.x),
 		fminf(min.y, max.y)
 	);
-	float tmax()
+	float tmax = fminf(
+		fmaxf(min.x, max.x),
+		fmaxf(min.y, max.y)
+	);
+	if(tmax < 0 || tmin>tmax)
+	{
+		return false;
+	}
+	float t = (tmin < 0.0f) ? tmax : tmin;
+	return t > 0.0f && t * t < LengthSq(l);
+}
+
+bool LineOrientedRectangle(const Line2D& line, const OrientedRectangle& rectangle)
+{
+	float theta = -DEG2RAD(rectangle.rotation);
+	float zRotation2x2[] = {
+		cosf(theta), sinf(theta),
+		-sinf(theta), cosf(theta)
+	};
+	Line2D localLine;
+
+	vec2 rotVector = line.start - rectangle.position;
+	Multiply(rotVector.asArray, vec2(rotVector.x, rotVector.y).asArray, 1, 2, zRotation2x2, 2, 2);
+	localLine.start = rotVector + rectangle.halfExtents;
+
+	rotVector = line.end - rectangle.position;
+	Multiply(rotVector.asArray, vec2(rotVector.x, rotVector.y).asArray, 1, 2, zRotation2x2, 2, 2);
+	localLine.end = rotVector + rectangle.halfExtents;
+
+	Rectangle2D localRectangle(Point2D(), rectangle.halfExtents * 2.0f);
+	return LineRectangle(localLine, localRectangle);
+}
+
+bool CircleCircle(const Circle& c1, const Circle& c2)
+{
+	Line2D line(c1.position, c2.position);
+	float radiiSum = c1.radius + c2.radius;
+	return LengthSq(line) <= radiiSum * radiiSum;
+}
+
+bool CircelRectangle(const Circle& circle, const Rectangle2D& rectangle);
+{
+	vec2 min = GetMin(rect);
+	vec2 max = GetMax(rect);
+
+	CLAMP(circle.position.x, min.x, max.x);
+	CLAMP(circle.position.y, min.y, max.y);
+
+	Line2D line(circle.position, closestPoint);
+	return LengthSq(line) <= circle.radius * circle.radius;
+}
+
+bool CircleOrientedRectangle(const Circle& circle, const OrientedRectangle& rect)
+{
+	vec2 r = circle.position - rect.position;
+	float theta = -DEG2RAD(rect.rotation);
+	float zRotation2x2[] = {
+		cosf(theta), sinf(theta),
+		-sinf(theta), cosf(theta)
+	};
+	Multiply(r.asArray, vec2(r.x, r.y).asArray, 1, 2, zRotation2x2, 2, 2);
+
+	Circle lCircle(r + rect.halfExtents, circle.radius);
+	Rectangle2D lRect(Point2D(), rect.halfExtents * 2.0f);
+
+	return CircleRectangle(lCircle, lRect);
+}
+
+bool RectangleRectangle(const Rectangle2D& rect1, const Rectangle2D& rect2)
+{
+	vec2 aMin = GetMin(rect1);
+	vec2 aMax = GetMax(rect1);
+	vec2 bMin = GetMin(rect2);
+	vec2 bMax = GetMax(rect2);
+
+	bool overX = ((bMin.x <= aMax.x) && (aMin.x <= bMax.x));
+	bool overY = ((bMin.y <= aMax.y) && (aMin.y <= bMax.y));
+
+	return overX && overY;
+}
+
+Interval2D GetInterval(const Rectangle2D& rect, const vec2& axis)
+{
+	Interval2D result;
+}
+
+bool OverlapOnAxis(const Rectangle2D& rect1, const Rectangle2D& rect2, const vec2& axis)
+{
+	Interval2D a = GetInterval(rect1, axis);
+	Interval2D b = GetInterval(rect2, axis);
+	return ((b.min <= a.max) && (a.min <= b.max));
+}
+
+
+bool RectangleRectangleSAT(const Rectangle2D& rect1, const Rectangle2D& rect2)
+{
+	vec2 axisToTest[] = {
+		vec2(1, 0), vec2(0, 1)
+	};
+	for (int i = 0; i < 2; i++)
+	{
+		// Intervals don't overlap, seperating axis found
+		if(!OverlapOnAxis(rect1, rect2, axisToTest[i]));
+	}
+	// ALl intervals overlapped, seperating axis not found
+	return true;
+}
+
+bool OverlapOnAxis(const Rectangle2D& rect1, const OrientedRectangle& rect2, const vec2& axis)
+{
+	Interval2D a = GetInterval(rect1, axis);
+	Interval2D b = GetInterval(rect2, axis);
+	return ((b.min <= a.max) && (a.min <= b.max));
 }
