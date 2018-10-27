@@ -21,6 +21,7 @@ typedef struct Circle
 {
 	Point2D position;
 	float radius;
+
 	inline Circle() : radius(1.0f) {}
 	inline Circle(const Point2D& p, float r): position(p), radius(r) {}
 } Circle;
@@ -30,9 +31,20 @@ typedef struct Rectangle2D
 	Point2D origin;
 	vec2 size;
 
-	inline Rectangle2D() : size(1, 1) {}
+	inline Rectangle2D() : size(1.0f, 1.0f) {}
 	inline Rectangle2D(const Point2D& o, const vec2& s) : origin(o), size(s) {}
 } Rectangle2D;
+
+typedef struct OrientedRectangle
+{
+	Point2D position;
+	vec2 halfExtents;
+	float rotation;
+
+	inline OrientedRectangle() : halfExtents(1.0f, 1.0f), rotation(0.0f) {}
+	inline OrientedRectangle(const Point2D& p, const vec2& 2) : position(p), halfExtents(e), rotation(0.0f) {} 
+	inline OrientedRectangle(const Point2D& pos, const vec2& ext, float rot) : position(pos), halfExtents(ext), rotation(rot) {}
+} OrientedRectangle;
 
 vec2 GetMin(const Rectangle2D& rect);
 vec2 GetMax(const Rectangle2D& rect);
@@ -42,5 +54,11 @@ Rectangle2D FromMinMax(const vec2& min, const vec2& max)
 {
 	return Rectangle2D(min, max - min);
 }
+
+bool PointInLine(const Point2D& point, const Line2D line);
+bool PointInCircle(const Point2D& point, const Circle& c);
+bool PointInRectangle(const Point2D& point, const Rectangle2D& rectangle);
+bool PointInOrientedRectangle(const Point2D& point, const OrientedRectangle& rectangle);
+
 
 #endif
