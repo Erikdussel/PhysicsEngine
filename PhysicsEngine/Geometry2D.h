@@ -17,14 +17,16 @@ typedef struct Line2D
 float Length(const Line2D& line);
 float LengthSq(const Line2D& line);
 
-typedef struct Circle{
+typedef struct Circle
+{
 	Point2D position;
 	float radius;
 	inline Circle() : radius(1.0f) {}
 	inline Circle(const Point2D& p, float r): position(p), radius(r) {}
 } Circle;
 
-typedef struct Rectangle2D {
+typedef struct Rectangle2D 
+{
 	Point2D origin;
 	vec2 size;
 
@@ -34,7 +36,11 @@ typedef struct Rectangle2D {
 
 vec2 GetMin(const Rectangle2D& rect);
 vec2 GetMax(const Rectangle2D& rect);
-Rectable2D FromMinMax(const vec2& min, const vec2& max);
+Rectangle2D FromMinMax(const vec2& min, const vec2& max);
 
+Rectangle2D FromMinMax(const vec2& min, const vec2& max)
+{
+	return Rectangle2D(min, max - min);
+}
 
 #endif
