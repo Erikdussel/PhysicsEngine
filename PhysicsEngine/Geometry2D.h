@@ -147,8 +147,6 @@ bool OverlapOnAxis(const Rectangle2D& rect1, const OrientedRectangle& rect2, con
 
 bool RectangleOrientedRectangle(const Rectangle2D& rect1, const OrientedRectangle& rect2);
 
-
-
 #define PointLine(point, line) \
 	PointOnLine(point, line)
 #define LinePoint(line, point) \
@@ -165,5 +163,6 @@ bool RectangleOrientedRectangle(const Rectangle2D& rect1, const OrientedRectangl
 	CircleOrientedRectangle(circle, rectangle)
 #define OrientedRectangleRectangle(oriented, regular) \
 	RectangleOrientedRectangle(regular, oriented);
+
 
 #endif

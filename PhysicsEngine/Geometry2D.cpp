@@ -234,3 +234,33 @@ bool OverlapOnAxis(const Rectangle2D& rect1, const OrientedRectangle& rect2, con
 	Interval2D b = GetInterval(rect2, axis);
 	return ((b.min <= a.max) && (a.min <= b.max));
 }
+
+bool RectangleOrientedRectangle(const Rectangle2D& rect1, const OrientedRectangle& rect2)
+{
+	vec2 axisToTest[]
+	{
+		vec2(1, 0) , vec2(0, 1),
+		vec2(), vec2()
+	};
+
+	float t = DEG2RAD(rect2.rotation);
+	float zRot[] = {
+		cosf(t), sinf(t),
+		-sinf(t), cosf(t)
+	};
+
+	vec2 axis = Normalized(vec2(rect2.halfExtents.x, 0));
+	Multiply(axisToTest[2].asArray, axis.asArray, 1, 2, zRot, 2, 2);
+	
+	axis = Normalized(vec2(0, rect2.halfExtents.y));
+	Multiply(axisToTest[3].asArray, axis.asArray, 1, 2, zRot, 2, 2);
+	
+	for (int i = 0; i < 4; i++)
+	{
+		if (!OverlapOnAxis(rect1, rect2, axisToTest[i]))
+		{
+			return false;
+		}
+		return true;
+	}
+}
